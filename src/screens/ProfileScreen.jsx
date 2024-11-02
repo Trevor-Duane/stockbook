@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   SafeAreaView,
@@ -10,11 +10,14 @@ import {
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useAuth } from "../../src/context/AuthContext";
+import ProfileModal from "../components/Stock/ProfileModal";
 
 function ProfileScreen({ onLogout }) {
-  const { logout, userData } = useAuth(); // Access logout function from context
+  const { logout, userData, apiURL } = useAuth(); // Access logout function from context
   const statusBarHeight =
     Platform.OS === "android" ? StatusBar.currentHeight : 0;
+
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
 
   const handleLogout = async () => {
     await logout(); // Call logout from context
@@ -28,10 +31,10 @@ function ProfileScreen({ onLogout }) {
         <View style={styles.appBarContainer}>
           <Text style={styles.title}>User Profile</Text>
           <View style={styles.rightIcons}>
-            <TouchableOpacity style={styles.iconButton}>
-              <MaterialIcons name="search" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
+            <TouchableOpacity
+              onPress={() => setProfileModalVisible(true)}
+              style={styles.iconButton}
+            >
               <MaterialIcons name="more-vert" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -75,6 +78,12 @@ function ProfileScreen({ onLogout }) {
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </SafeAreaView>
+
+      <ProfileModal
+        animationType="slide"
+        profileModalVisible={profileModalVisible}
+        setProfileModalVisible={setProfileModalVisible}
+      />
     </>
   );
 }

@@ -138,10 +138,10 @@ function BudgetScreen() {
           <Text style={styles.title}>Budgets</Text>
           <View style={styles.rightIcons}>
             <TouchableOpacity style={styles.iconButton}>
-              <MaterialIcons name="search" size={24} color="#fff" />
+              <MaterialIcons name="search" size={24} color="#663399" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
-              <MaterialIcons name="more-vert" size={24} color="#fff" />
+              <MaterialIcons name="more-vert" size={24} color="#663399" />
             </TouchableOpacity>
           </View>
         </View>

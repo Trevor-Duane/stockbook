@@ -4,51 +4,33 @@ import CustomCB from "../customCheckbox/CustomCB";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 
-const MoreModal = ({ moreModalVisible, setMoreModalVisible }) => {
+const ProfileModal = ({ profileModalVisible, setProfileModalVisible }) => {
   const [isSelected, setSelection] = useState(false);
   const navigation = useNavigation();
 
   const handleClose = () => {
-    setMoreModalVisible(false);
-  };
-
-  const handleSalesClick = () => {
-    handleClose();
-    navigation.navigate("Details");
+    setProfileModalVisible(false);
   };
 
   const handleFilterClick = () => {
     handleClose();
-    navigation.navigate("Filter");
+    navigation.navigate("Updates");
   };
   return (
     <View style={styles.modalContainer}>
       <Modal
         animationType="slide"
         transparent={true} // Set to true for a backdrop effect
-        visible={moreModalVisible}
-        onRequestClose={() => setMoreModalVisible(false)} // Properly close the modal
+        visible={profileModalVisible}
+        onRequestClose={() => setProfileModalVisible(false)} // Properly close the modal
       >
         <View style={styles.modalContent}>
           <View>
-            {/* <TouchableOpacity onPress={() => handleSalesClick()}>
-              <Text style={styles.modalText}>Sales</Text>
-            </TouchableOpacity> */}
+            
             <TouchableOpacity onPress={() => handleFilterClick()}>
-              <Text style={styles.modalText}>Filters</Text>
+              <Text style={styles.modalText}>Change Password</Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity>
-              <Text style={styles.modalText}>Date Ascending</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.modalText}>Date Descending</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.modalText}>Select Range</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.modalText}>Print</Text>
-            </TouchableOpacity> */}
+            
           </View>
 
           <View>
@@ -102,4 +84,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MoreModal;
+export default ProfileModal;

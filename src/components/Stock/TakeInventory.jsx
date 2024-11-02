@@ -9,8 +9,10 @@ import {
   Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { showMessage } from "react-native-flash-message";
 import { useAuth } from "../../context/AuthContext";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
@@ -22,6 +24,8 @@ const TakeInventory = ({
   const [shoplist, setShoplist] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantityReceived, setQuantityReceived] = useState("");
+  const [inventoryDate, setInventoryDate] = useState(null);
+  const [showInventoryDatePicker, setShowInventoryDatePicker] = useState(false);
   const { apiURL } = useAuth();
 
   // Fetch shopping items
@@ -38,30 +42,48 @@ const TakeInventory = ({
     fetchData();
   }, []);
 
-  // Handle form submission
+  // Handle form submission with validation
   const handleSubmit = async () => {
-    if (!selectedItem || quantityReceived === "") {
-      Alert.alert(
-        "Error",
-        "Please select an item and enter quantity received."
-      );
+    if (!selectedItem) {
+      showMessage({
+        message: "Please select an item.",
+        type: "warning",
+      });
+      return;
+    }
+    if (!inventoryDate) {
+      showMessage({
+        message: "Please select an inventory date.",
+        type: "warning",
+      });
+      return;
+    }
+    if (!quantityReceived) {
+      showMessage({
+        message: "Please enter the quantity received.",
+        type: "warning",
+      });
       return;
     }
 
-    const payload = {
-      item_id: selectedItem.id,
-      quantity_received,
-    };
-
     try {
-      await axios.post(`${apiURL}/api/add_inventory`, payload);
+      await axios.post(`${apiURL}/api/add_inventory`, {
+        inventory_date: inventoryDate,
+        shopping_list_id: Number(selectedItem.id),
+        item_name: selectedItem.item_name,
+        section: selectedItem.section,
+        uom: selectedItem.uom,
+        quantity_recieved: Number(quantityReceived),
+      });
       showMessage({
         message: "Inventory added successfully!",
         type: "success",
       });
+      // Reset form fields
       setInventoryAddModal(false);
       setSelectedItem(null);
       setQuantityReceived("");
+      setInventoryDate(null);
       refetchInventoryList(); // Refresh inventory list after adding new entry
     } catch (error) {
       console.error("Error adding inventory:", error);
@@ -91,7 +113,7 @@ const TakeInventory = ({
           <View style={styles.inventoryContainer}>
             <View style={styles.pickersContainer}>
               <Picker
-                selectedValue={selectedItem}
+                selectedValue={selectedItem ? selectedItem.id : ""}
                 style={styles.picker}
                 onValueChange={(value) => {
                   const item = shoplist.find((i) => i.id === value);
@@ -111,6 +133,36 @@ const TakeInventory = ({
 
             {selectedItem && (
               <>
+                <View style={styles.inventoryDateContainer}>
+                  <Text style={styles.label}>Inventory Date:</Text>
+                  <TouchableOpacity
+                    style={styles.inventoryDateInput}
+                    onPress={() => setShowInventoryDatePicker(true)}
+                  >
+                    <Text>
+                      {inventoryDate
+                        ? inventoryDate.toDateString()
+                        : "Select Inventory Date"}
+                    </Text>
+                    <MaterialIcons
+                      name="calendar-month"
+                      size={20}
+                      color="#000"
+                    />
+                  </TouchableOpacity>
+                  {showInventoryDatePicker && (
+                    <DateTimePicker
+                      value={inventoryDate || new Date()}
+                      mode="date"
+                      display="default"
+                      onChange={(event, date) => {
+                        setShowInventoryDatePicker(false);
+                        setInventoryDate(date || inventoryDate);
+                      }}
+                    />
+                  )}
+                </View>
+
                 <View style={styles.inputGroupRow}>
                   <View style={styles.inputGroup}>
                     <Text style={styles.label}>Item Name:</Text>
@@ -224,6 +276,19 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: 2,
   },
+  //Inventory Date styles
+  inventoryDateContainer: {
+    marginVertical: 8,
+  },
+  inventoryDateInput: {
+    paddingHorizontal: 15,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#eae9e8",
+    height: 40,
+    marginHorizontal: 2,
+  },
   input: {
     width: "100%",
     padding: 10,
@@ -253,11 +318,11 @@ const styles = StyleSheet.create({
   },
   inputGroupRow: {
     flexDirection: "row",
-    columnGap: 4
+    columnGap: 4,
   },
   inputGroup: {
     marginBottom: 10,
-    flex: 1
+    flex: 1,
   },
 });
 
