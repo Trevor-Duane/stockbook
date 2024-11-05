@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import logo from '../../assets/logoo.png';
+import { useNavigation } from "@react-navigation/native";
 import { useAuth } from '../../src/context/AuthContext';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const LoginScreen = () => {
   const { login } = useAuth();
+
+  const navigation = useNavigation();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,6 +36,10 @@ const LoginScreen = () => {
       });
     }
   };
+  const handleRegisterClick = (rowData) => {
+    // Navigate to DetailScreen with rowData as a parameter
+    navigation.navigate('Register');
+  };
 
   return (
     <View style={styles.container}>
@@ -58,6 +65,10 @@ const LoginScreen = () => {
       </View>
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => handleRegisterClick()} style={styles.registerButton}>
+        <Text style={styles.registerButtonText}>Register here...</Text>
       </TouchableOpacity>
     </View>
   );
@@ -105,13 +116,26 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#663399',
     paddingVertical: 10,
+    width: "100%",
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   buttonText: {
     color: '#fff',
+    textAlign: "center",
     fontWeight: 'bold',
   },
+  registerButton:{
+    alignSelf: 'flex-end',
+    paddingVertical: 10,
+    marginTop: 10,
+    borderRadius: 5,
+    
+  },
+  registerButtonText: {
+    textAlign: "right",
+    color: "#663399"
+  }
 });
 
 export default LoginScreen;

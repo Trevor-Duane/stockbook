@@ -30,6 +30,20 @@ export const AuthProvider = ({ children }) => {
       throw new Error('Login failed');
     }
   };
+  const register = async (username, email, mobile, address, password, confirm_password) => {
+    try {
+      const response = await axios.post(`${apiURL}/auth/register`, {
+        username,
+        email,
+        address: "TendaCafe",
+        mobile,
+        password,
+        confirm_password,
+      });
+    } catch (error) {
+      throw new Error('Login failed');
+    }
+  };
 
   const logout = async () => {
     setIsLoggedIn(false);
@@ -40,7 +54,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, userData, apiURL }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, register, userData, apiURL }}>
       {children}
     </AuthContext.Provider>
   );

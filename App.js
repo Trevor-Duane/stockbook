@@ -7,6 +7,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import FlashMessage from 'react-native-flash-message';
 import { Platform, StatusBar as RNStatusBar } from 'react-native';
 import React, { useEffect } from 'react';
+import RegisterScreen from './src/screens/RegisterScreen';
 
 const Stack = createStackNavigator();
 
@@ -17,7 +18,6 @@ export default function App() {
         <StatusBar backgroundColor="#e2c0f8" barStyle="dark-content" />
         <MainNavigator />
         <FlashMessage position="top" style={{ marginTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0 }} />
-        {/* <FlashMessage position="top" />v */}
       </NavigationContainer>
     </AuthProvider>
   );
@@ -33,7 +33,10 @@ const MainNavigator = () => {
         <Stack.Screen name="Root" component={RootNavigation} />
       ) : (
         // Render the login screen if not logged in
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+        </>
       )}
     </Stack.Navigator>
   );
