@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(null);
   const [userData, setUserData] = useState(null);
 
-  const apiURL = "https://lionfish-many-wildly.ngrok-free.app"
+  const apiURL = "https://api.tendaafrica.net"
 
   const login = async (email, password) => {
     try {

@@ -11,7 +11,6 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { showMessage } from 'react-native-flash-message';
 import { useAuth } from "../../context/AuthContext";
-// import { useAuth } from '../../src/context/AuthContext';//////
 import axios from "axios";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
@@ -72,8 +71,7 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
   // Handle form submission
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(
-        "cccc/api/store_log",
+      const response = await axios.post(`${apiURL}/api/store_log`,
         {
           out_date: currentDate,
           product_id: selectedValue,

@@ -14,6 +14,7 @@ import { Table, Row } from "react-native-reanimated-table";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const BudgetDetails = ({ route }) => {
   const navigation = useNavigation();
@@ -35,6 +36,7 @@ const BudgetDetails = ({ route }) => {
   );
   const [widthArr, setWidthArr] = useState([]);
   const [tableData, setTableData] = useState({}); // Change to an object to hold data by section
+  const {apiURL} = useAuth()
 
   // Function to calculate table column widths based on screen width
   const updateTableWidths = () => {
@@ -62,9 +64,7 @@ const BudgetDetails = ({ route }) => {
 
   const fetchBudgetDetails = async (budgetId) => {
     try {
-      const response = await axios.get(
-        `https://lionfish-many-wildly.ngrok-free.app/api/budget/${budgetId}/details`
-      );
+      const response = await axios.get(`${apiURL}/api/budget/${budgetId}/details`);
       return response.data.data; // Assuming the API returns an array of budget items in data
     } catch (error) {
       console.error("Error fetching budget details:", error);

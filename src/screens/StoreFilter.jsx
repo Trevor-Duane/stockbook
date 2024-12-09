@@ -14,6 +14,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 const StoreFilter = () => {
@@ -31,15 +32,13 @@ const StoreFilter = () => {
 
   const navigation = useNavigation();
 
+  const {apiURL} = useAuth();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const itemResponse = await axios.get(
-          "https://lionfish-many-wildly.ngrok-free.app/api/store_items"
-        );
-        const productResponse = await axios.get(
-          "https://lionfish-many-wildly.ngrok-free.app/api/items"
-        );
+        const itemResponse = await axios.get(`${apiURL}/api/store_items`);
+        const productResponse = await axios.get(`${apiURL}/api/items`);
         setItemNames(itemResponse.data.data);
         setProductNames(productResponse.data.data);
       } catch (error) {
@@ -51,8 +50,7 @@ const StoreFilter = () => {
 
   const applyFilters = async () => {
     try {
-      const response = await axios.post(
-        "https://lionfish-many-wildly.ngrok-free.app/api/filter_sales",
+      const response = await axios.post(`${apiURL}/api/filter_sales`,
         {
           item_name: selectedItemName,
           product_name: selectedProductName,

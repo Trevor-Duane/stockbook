@@ -37,8 +37,8 @@ function HomeScreen() {
     "Out Date",
     "Item Name",
     "Product Name",
-    "Amount",
-    "inStock",
+    "Amount (g)",
+    "inStock (g)",
   ]);
 
   const [screenWidth, setScreenWidth] = useState(
