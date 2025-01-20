@@ -17,16 +17,17 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
   const [currentDate, setCurrentDate] = useState("");
   const [data, setData] = useState([]); 
+  const [kot, setKOT] = useState(null)
   const [recipes, setRecipes] = useState([]); 
   const [selectedValue, setSelectedValue] = useState("");
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     out_date: "",
     product_id: "",
-    username: "Kitchen",
+    username: "",
   });
 
-  const { apiURL } = useAuth();
+  const { apiURL, userData } = useAuth();
 
   // Handle form input changes
   const handleInputChange = (name, value) => {
@@ -70,12 +71,20 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
 
   // Handle form submission
   const handleSubmit = async () => {
+    if (!kot) {
+      showMessage({
+        message: "Please add kot number.",
+        type: "warning",
+      });
+      return;
+    }
     try {
       const response = await axios.post(`${apiURL}/api/store_log`,
         {
+          kot: kot,
           out_date: currentDate,
           product_id: selectedValue,
-          username: formData.username
+          username: userData.username
         }
       ); // Replace with your API URL
       if (response.status === 201) {
@@ -83,13 +92,11 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
           message: "Stock Out recorded successfully!",
           type:"success"
         });
+      
+        setSelectedValue("")
+        setKOT(null)
         refetchStockLogs();
-        setModalVisible(false); 
-        setFormData({ 
-          out_date: "",
-          product_id: "",
-          username: "Kitchen", 
-        }); 
+        setModalVisible(false);
       } else {
         showMessage({
           message: "Failed to submit stock out data",
@@ -128,14 +135,13 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
               <View>
                 <Text style={styles.modalTitle}>Stock Out Form</Text>
               </View>
-              <View>
+              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.storeMOdalCloseButton}>
                 <FontAwesome
                   name="close"
                   size={24}
                   color="#e2c0f8"
-                  onPress={() => setModalVisible(false)}
                 />
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.formViewContainer}>
@@ -148,6 +154,17 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
                   value={currentDate}
                   editable={false}
                 />
+              </View>
+
+              <View>
+                <Text style={styles.label}>KOT Number</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="KOT Number"
+                  value={kot}
+                  onChangeText={setKOT}
+                  keyboardType="numeric"
+                      />
               </View>
 
               {/* Item Name Picker */}
@@ -244,6 +261,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#ffffff",
   },
+  storeMOdalCloseButton: {
+    padding: 10
+  },
   formViewContainer: {
     paddingVertical: 5,
     marginVertical: 10,
@@ -255,6 +275,7 @@ const styles = StyleSheet.create({
     color: "black",
     backgroundColor: "#eae9e8",
     marginBottom: 20,
+    height: 48
     // borderRadius: 5,
   },
   buttonContainer: {
@@ -282,6 +303,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     backgroundColor: "#eae9e8",
+    marginBottom: 10,
     borderRadius: 5,
 
   },

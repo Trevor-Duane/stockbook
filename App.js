@@ -8,6 +8,7 @@ import FlashMessage from 'react-native-flash-message';
 import { Platform, StatusBar as RNStatusBar } from 'react-native';
 import React, { useEffect } from 'react';
 import RegisterScreen from './src/screens/RegisterScreen';
+import VerificationScreen from './src/screens/VerificationScreen';
 
 const Stack = createStackNavigator();
 
@@ -24,18 +25,22 @@ export default function App() {
 }
 
 const MainNavigator = () => {
-  const { isLoggedIn } = useAuth(); // Access isLoggedIn from AuthContext
+  const { isLoggedIn, userData } = useAuth(); // Access isLoggedIn from AuthContext
+
+  // Check if the user is logged in and whether they are verified
+  const isVerified = userData?.isVerified;
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {isLoggedIn ? (
-        // Render the main app screens if logged in
-        <Stack.Screen name="Root" component={RootNavigation} />
+      {isLoggedIn && isVerified ? (
+        <>
+          <Stack.Screen name="Root" component={RootNavigation} />
+        </>
       ) : (
-        // Render the login screen if not logged in
         <>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="Verification" component={VerificationScreen} />
         </>
       )}
     </Stack.Navigator>

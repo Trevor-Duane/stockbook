@@ -102,12 +102,13 @@ const TakeInventory = ({
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Inventory Form</Text>
-            <FontAwesome
-              name="close"
-              size={20}
-              color="#e2c0f8"
-              onPress={() => setInventoryAddModal(false)}
-            />
+            <TouchableOpacity onPress={() => setInventoryAddModal(false)} style={styles.inventoryModalCloseButton}>
+              <FontAwesome
+                name="close"
+                size={20}
+                color="#e2c0f8"
+              />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.inventoryContainer}>
@@ -262,6 +263,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#ffffff",
   },
+  inventoryModalCloseButton: {
+    padding: 4,
+  },
   inventoryContainer: {
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -273,8 +277,6 @@ const styles = StyleSheet.create({
   picker: {
     backgroundColor: "#e2c0f8",
     marginBottom: 15,
-    height: 40,
-    marginHorizontal: 2,
   },
   //Inventory Date styles
   inventoryDateContainer: {

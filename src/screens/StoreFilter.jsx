@@ -8,13 +8,14 @@ import {
   StatusBar,
   Platform,
   ScrollView,
-  Button,
+  Button, TextInput
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import { useAuth } from "../context/AuthContext";
+import { exportToExcel, exportToPDF, exportToPDF2 } from "../utils/exportUtil.js";
 import axios from "axios";
 
 const StoreFilter = () => {
@@ -29,6 +30,8 @@ const StoreFilter = () => {
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [showSingleDatePicker, setShowSingleDatePicker] = useState(false);
+
+  const [fileName, setFileName] = useState(""); //state to store filename.
 
   const navigation = useNavigation();
 
@@ -224,6 +227,22 @@ const StoreFilter = () => {
                 <Text>Total Sales: {item.sales}</Text>
               </View>
             ))}
+
+            {filteredData.length > 0 && (
+              <View>
+                <TextInput
+                style={styles.fileNameInput}
+                placeholder="Enter file name"
+                value={fileName}
+                onChangeText={setFileName}
+                />
+
+                <View style={styles.exportButtons}>
+                  <Button title="Export to Excel" onPress={() => exportToExcel(filteredData, fileName || "Data")}/>
+                  <Button title="Export to PDF" onPress={() => exportToPDF2(filteredData, fileName || "Data")}/>
+                </View>
+              </View>
+            )}
           </ScrollView>
         </View>
       </ScrollView>
@@ -276,7 +295,6 @@ const styles = StyleSheet.create({
   picker: {
     backgroundColor: "#fff",
     flex: 1,
-    height: 40,
     marginHorizontal: 2,
     width: "50%",
   },
@@ -325,6 +343,19 @@ const styles = StyleSheet.create({
   },
   ScrollViewContainer: {
     paddingBottom: 20
+  },
+  exportButtons: {
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "space-evenly"
+  },
+  fileNameInput: {
+    borderWidth: 1,
+    padding: 8,
+    margin: 10,
+    borderRadius: 5,
+    borderColor: "#ccc"
   }
+
 });
 export default StoreFilter;

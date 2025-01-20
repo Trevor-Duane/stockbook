@@ -8,8 +8,10 @@ import {
   StatusBar,
   Platform,
   ScrollView,
-  Dimensions, RefreshControl
+  Dimensions,
+  RefreshControl, Modal, TextInput, Button
 } from "react-native";
+
 import {
   Table,
   TableWrapper,
@@ -19,18 +21,18 @@ import {
   Cols,
   Cell,
 } from "react-native-reanimated-table";
-import { useAuth } from '../../src/context/AuthContext';
+import BudgetModal from "../components/Stock/BudgetModal";
+import { useAuth } from "../../src/context/AuthContext";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
 function BudgetScreen() {
-
   const navigation = useNavigation();
   const statusBarHeight =
     Platform.OS === "android" ? StatusBar.currentHeight : 0;
 
-    const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [tableHead, setTableHead] = useState([
     "Id",
     "Budget",
@@ -46,6 +48,7 @@ function BudgetScreen() {
   );
   const [widthArr, setWidthArr] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [budgetModalVisible, setBudgetModalVisible] = useState(false);
   const [tableData, setTableData] = useState([]);
   const { apiURL } = useAuth();
 
@@ -56,7 +59,7 @@ function BudgetScreen() {
     const calculatedWidths = [
       screenWidth * 0.1,
       screenWidth * 0.2,
-      screenWidth * 0.20,
+      screenWidth * 0.2,
       screenWidth * 0.3,
       screenWidth * 0.25,
       screenWidth * 0.2,
@@ -83,9 +86,7 @@ function BudgetScreen() {
 
   const fetchBudgets = async () => {
     try {
-      const response = await axios.get(
-        `${apiURL}/api/budgets`
-      ); // Replace with your API URL
+      const response = await axios.get(`${apiURL}/api/budgets`); // Replace with your API URL
       const apiData = response.data.data;
 
       // Assuming your API returns an array of objects, map it to table rows
@@ -127,54 +128,82 @@ function BudgetScreen() {
 
   const handleRowClick = (rowData) => {
     // Navigate to DetailScreen with rowData as a parameter
-    navigation.navigate('BudgetDetails', { budgetId: rowData[0], budget: rowData });
+    navigation.navigate("BudgetDetails", {
+      budgetId: rowData[0],
+      budget: rowData,
+    });
   };
 
   return (
     <>
-    <SafeAreaView style={[styles.safeArea, { paddingTop: statusBarHeight }]}>
+      <SafeAreaView style={[styles.safeArea, { paddingTop: statusBarHeight }]}>
         <StatusBar backgroundColor="#e2c0f8" barStyle="dark-content" />
         <View style={styles.appBarContainer}>
           <Text style={styles.title}>Budgets</Text>
-          <View style={styles.rightIcons}>
+          {/* <View style={styles.rightIcons}>
             <TouchableOpacity style={styles.iconButton}>
               <MaterialIcons name="search" size={24} color="#663399" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
-              <MaterialIcons name="more-vert" size={24} color="#663399" />
+              <MaterialIcons name="more-vert" size={24} color="#fff" />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </SafeAreaView>
 
-    <View style={styles.container}>
-      <ScrollView horizontal={true} style={styles.scrollContainer}>
-        <View style={styles.tableContainer}>
-          <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
-            <Row
-              data={tableHead}
-              widthArr={widthArr}
-              style={styles.header}
-              textStyle={styles.text}
-            />
-          </Table>
-          <ScrollView style={styles.dataWrapper} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-          <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
+      <View style={styles.container}>
+        <ScrollView horizontal={true} style={styles.scrollContainer}>
+          <View style={styles.tableContainer}>
+            <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
+              <Row
+                data={tableHead}
+                widthArr={widthArr}
+                style={styles.header}
+                textStyle={styles.text}
+              />
+            </Table>
+            <ScrollView
+              style={styles.dataWrapper}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+            >
+              <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
                 {tableData.map((rowData, index) => (
-                  <TouchableOpacity key={index} onPress={() => handleRowClick(rowData)}>
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => handleRowClick(rowData)}
+                  >
                     <Row
                       data={rowData}
                       widthArr={widthArr}
-                      style={Object.assign({}, styles.row, index % 2 ? { backgroundColor: "#FFF" } : {})}
+                      style={Object.assign(
+                        {},
+                        styles.row,
+                        index % 2 ? { backgroundColor: "#FFF" } : {}
+                      )}
                       textStyle={styles.text}
                     />
                   </TouchableOpacity>
                 ))}
               </Table>
-          </ScrollView>
-        </View>
-      </ScrollView>
-    </View>
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
+
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <MaterialIcons name="add" size={24} color="#fff" />
+      </TouchableOpacity>
+
+      {/* Budget Modal */}
+      <BudgetModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)} // Close modal
+      />
     </>
   );
 }
@@ -241,7 +270,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
   },
-// Stylesfor appbar
+  // Stylesfor appbar
   appBarContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -260,5 +289,22 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     paddingHorizontal: 8,
+  },
+  floatingButton: {
+    position: "absolute",
+    display: "none",
+    bottom: 20, // Distance from the bottom
+    right: 20, // Distance from the right
+    backgroundColor: "#663399", // Button color
+    borderRadius: 30, // Makes it circular
+    width: 50,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5, // Adds shadow for Android
   },
 });

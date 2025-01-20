@@ -59,7 +59,7 @@ function InventoryScreen() {
         item.item_name,
         item.section,
         item.uom,
-        item.quantity_received,
+        item.quantity_recieved,
       ]);
 
       setTableData(formattedData);
@@ -211,7 +211,8 @@ const styles = StyleSheet.create({
   clearButton: {
     height: 40,
     borderRadius: 4,
-    backgroundColor: "red",
+    fontWeight: "bold",
+    backgroundColor: "#f89c0e",
     alignItems: "center",
     justifyContent: "center",
   },

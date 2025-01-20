@@ -36,7 +36,7 @@ const BudgetDetails = ({ route }) => {
   );
   const [widthArr, setWidthArr] = useState([]);
   const [tableData, setTableData] = useState({}); // Change to an object to hold data by section
-  const {apiURL} = useAuth()
+  const { apiURL } = useAuth();
 
   // Function to calculate table column widths based on screen width
   const updateTableWidths = () => {
@@ -64,7 +64,9 @@ const BudgetDetails = ({ route }) => {
 
   const fetchBudgetDetails = async (budgetId) => {
     try {
-      const response = await axios.get(`${apiURL}/api/budget/${budgetId}/details`);
+      const response = await axios.get(
+        `${apiURL}/api/budget/${budgetId}/details`
+      );
       return response.data.data; // Assuming the API returns an array of budget items in data
     } catch (error) {
       console.error("Error fetching budget details:", error);
@@ -130,14 +132,12 @@ const BudgetDetails = ({ route }) => {
             </TouchableOpacity>
             <Text style={styles.title}>Budget Details</Text>
           </View>
-          <View style={styles.rightIcons}>
-            <View>
-              <Text style={styles.budgetTitle}>{budget[1]}</Text>
-            </View>
-          </View>
+          
         </View>
       </SafeAreaView>
-
+      <View style={styles.budgetHeaderWrapper}>
+        <Text style={styles.budgetTitle}>{budget[1]}</Text>
+      </View>
       <ScrollView>
         {Object.keys(tableData).map((section) => {
           const items = tableData[section];
@@ -226,12 +226,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
-  rightIcons: {
-    flexDirection: "row",
+  budgetHeaderWrapper: {
+    backgroundColor: "#f89c0e",
+    display: "flex",
+    alignItems: "flex-end"
   },
   budgetTitle: {
-    color: "#e2c0f8",
-    fontWeight: "bold"
+    color: "#fff",
+    paddingVertical: 5,
+    fontWeight: "bold",
   },
   iconButton: {
     paddingHorizontal: 8,

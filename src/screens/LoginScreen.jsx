@@ -24,7 +24,11 @@ const LoginScreen = () => {
       return;
     }
     try {
-      await login(email, password);
+      const user = await login(email, password);
+      if (!user.isVerified) {
+        navigation.navigate('Verification')
+      }
+
       showMessage({
         message: "Login successful!",
         type: "success",
@@ -37,7 +41,6 @@ const LoginScreen = () => {
     }
   };
   const handleRegisterClick = (rowData) => {
-    // Navigate to DetailScreen with rowData as a parameter
     navigation.navigate('Register');
   };
 

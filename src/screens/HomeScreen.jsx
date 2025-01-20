@@ -35,6 +35,7 @@ function HomeScreen() {
   const [tableHead, setTableHead] = useState([
     "Id",
     "Out Date",
+    "KOT",
     "Item Name",
     "Product Name",
     "Amount (g)",
@@ -57,10 +58,11 @@ function HomeScreen() {
     const calculatedWidths = [
       screenWidth * 0.1,
       screenWidth * 0.2,
-      screenWidth * 0.3,
-      screenWidth * 0.3,
       screenWidth * 0.15,
-      screenWidth * 0.2,
+      screenWidth * 0.3,
+      screenWidth * 0.3,
+      screenWidth * 0.18,
+      screenWidth * 0.18,
     ];
 
     setWidthArr(calculatedWidths);
@@ -93,6 +95,7 @@ function HomeScreen() {
       const formattedData = apiData.map((item) => [
         item.id, // Replace with the actual field names from your API response
         item.out_date,
+        item.kot,
         item.item_name,
         item.product_name,
         item.usage_amount,
@@ -126,17 +129,17 @@ function HomeScreen() {
         <View style={styles.appBarContainer}>
           <Text style={styles.title}>Store</Text>
           <View style={styles.rightIcons}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.iconButton}
               onPress={() => setFilesModalVisible(true)}
             >
               <MaterialIcons name="summarize" size={24} color="#fff" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               style={styles.iconButton}
               onPress={() => setMoreModalVisible(true)}
             >
-              <MaterialIcons name="more-vert" size={24} color="#fff" />
+              <MaterialIcons name="summarize" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
@@ -177,9 +180,9 @@ function HomeScreen() {
           <TouchableOpacity style={styles.button1} onPress={handleStockOut}>
             <Text style={styles.buttonText}>Stock Out</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button2} onPress={handleStockIn}>
+          {/* <TouchableOpacity style={styles.button2} onPress={handleStockIn}>
             <Text style={styles.buttonText}>Stock In</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <StockOutModal
           refetchStockLogs={fetchData}
@@ -243,14 +246,15 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button1: {
-    backgroundColor: "#d1463c",
+    backgroundColor: "#f89c0e",
     padding: 10,
     borderRadius: 5,
+    fontWeight: "bold",
     flex: 1,
     marginHorizontal: 10,
   },
   button2: {
-    backgroundColor: "#44cc11",
+    backgroundColor: "#f89c0e",
     padding: 10,
     borderRadius: 5,
     flex: 1,

@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Modal, Text, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Modal,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native";
 import CustomCB from "../customCheckbox/CustomCB";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
@@ -21,44 +28,32 @@ const MoreModal = ({ moreModalVisible, setMoreModalVisible }) => {
     handleClose();
     navigation.navigate("Filter");
   };
-  return (
-    <View style={styles.modalContainer}>
-      <Modal
-        animationType="slide"
-        transparent={true} // Set to true for a backdrop effect
-        visible={moreModalVisible}
-        onRequestClose={() => setMoreModalVisible(false)} // Properly close the modal
-      >
-        <View style={styles.modalContent}>
-          <View>
-            {/* <TouchableOpacity onPress={() => handleSalesClick()}>
-              <Text style={styles.modalText}>Sales</Text>
-            </TouchableOpacity> */}
-            <TouchableOpacity onPress={() => handleFilterClick()}>
-              <Text style={styles.modalText}>Filters</Text>
-            </TouchableOpacity>
-            {/* <TouchableOpacity>
-              <Text style={styles.modalText}>Date Ascending</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.modalText}>Date Descending</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.modalText}>Select Range</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.modalText}>Print</Text>
-            </TouchableOpacity> */}
-          </View>
 
-          <View>
-            <TouchableOpacity onPress={handleClose}>
-              <MaterialIcons name="close" size={18} color="#000" />
+  const handleReportsClick = () => {
+    handleClose();
+    navigation.navigate("Reports");
+  };
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={moreModalVisible}
+      onRequestClose={() => setMoreModalVisible(false)} // Properly close the modal
+    >
+      <TouchableWithoutFeedback
+        onPress={handleClose}
+        style={styles.modalContent}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {/* ////// */}
+            <TouchableOpacity style={styles.modalItems} onPress={() => handleReportsClick()}>
+              <Text style={styles.modalText}>Reports</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
-    </View>
+      </TouchableWithoutFeedback>
+    </Modal>
   );
 };
 
@@ -72,23 +67,27 @@ const styles = StyleSheet.create({
   modalContent: {
     position: "absolute",
     right: 0,
-    backgroundColor: "white",
-    borderRadius: 6,
-    padding: 20,
-    marginTop: 56,
+    backgroundColor: "#fff",
+    borderRadius: 4,
+    paddingVertical: 20,
+    marginTop: 48,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    width: "fit-content",
+    width: 120,
   },
   modalItems: {
     flexDirection: "row",
+    paddingHorizontal: 10,
+    borderColor: "#cccccc",
+    borderBottomWidth: .5,
+    borderTopWidth: .5,
   },
   modalText: {
     fontSize: 18,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   closeButton: {
     alignSelf: "flex-end",
