@@ -9,16 +9,17 @@ import {
   Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { showMessage } from 'react-native-flash-message';
+import { showMessage } from "react-native-flash-message";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
   const [currentDate, setCurrentDate] = useState("");
-  const [data, setData] = useState([]); 
-  const [kot, setKOT] = useState(null)
-  const [recipes, setRecipes] = useState([]); 
+  const [data, setData] = useState([]);
+  const [kot, setKOT] = useState(null);
+  const [quantity, setQuantity] = useState(null);
+  const [recipes, setRecipes] = useState([]);
   const [selectedValue, setSelectedValue] = useState("");
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -56,7 +57,9 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
     const fetchRecipes = async () => {
       if (selectedValue) {
         try {
-          const response = await axios.get(`${apiURL}/api/recipes/${selectedValue}`);
+          const response = await axios.get(
+            `${apiURL}/api/recipes/${selectedValue}`
+          );
           console.log("Recipes response data", response.data);
           setRecipes(response.data.data); // Assuming response.data.data contains the recipes
         } catch (error) {
@@ -78,38 +81,44 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
       });
       return;
     }
+    if (!quantity || quantity <= 0) {
+      showMessage({
+        message: "Please enter a valid quantity.",
+        type: "warning",
+      });
+      return;
+    }
     try {
-      const response = await axios.post(`${apiURL}/api/store_log`,
-        {
-          kot: kot,
-          out_date: currentDate,
-          product_id: selectedValue,
-          username: userData.username
-        }
-      ); // Replace with your API URL
+      const response = await axios.post(`${apiURL}/api/store_log`, {
+        kot: kot,
+        qty: quantity,
+        out_date: currentDate,
+        product_id: selectedValue,
+        username: userData.username,
+      }); // Replace with your API URL
       if (response.status === 201) {
         showMessage({
           message: "Stock Out recorded successfully!",
-          type:"success"
+          type: "success",
         });
-      
-        setSelectedValue("")
-        setKOT(null)
+
+        setSelectedValue("");
+        setKOT(null);
+        setQuantity(null);
         refetchStockLogs();
         setModalVisible(false);
       } else {
         showMessage({
           message: "Failed to submit stock out data",
-          type:"warning"
+          type: "warning",
         });
       }
     } catch (error) {
       console.error(error);
       showMessage({
         message: "An error occurred while submitting stock out data.",
-        type: "danger"
-      })
-    
+        type: "danger",
+      });
     }
   };
 
@@ -135,19 +144,18 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
               <View>
                 <Text style={styles.modalTitle}>Stock Out Form</Text>
               </View>
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.storeMOdalCloseButton}>
-                <FontAwesome
-                  name="close"
-                  size={24}
-                  color="#e2c0f8"
-                />
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={styles.storeMOdalCloseButton}
+              >
+                <FontAwesome name="close" size={24} color="#e2c0f8" />
               </TouchableOpacity>
             </View>
 
             <View style={styles.formViewContainer}>
               {/* Out Date */}
               <View>
-                <Text style={styles.label}>Stockout Date:</Text>
+                <Text style={styles.label}>Stockout Date</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Take out date"
@@ -155,7 +163,6 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
                   editable={false}
                 />
               </View>
-
               <View>
                 <Text style={styles.label}>KOT Number</Text>
                 <TextInput
@@ -164,12 +171,12 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
                   value={kot}
                   onChangeText={setKOT}
                   keyboardType="numeric"
-                      />
+                />
               </View>
 
               {/* Item Name Picker */}
               <View>
-              <Text style={styles.label}>Item to Prepare:</Text>
+                <Text style={styles.label}>Item to Prepare</Text>
                 <Picker
                   selectedValue={selectedValue}
                   style={styles.picker}
@@ -186,13 +193,25 @@ const StockOutModal = ({ modalVisible, setModalVisible, refetchStockLogs }) => {
                 </Picker>
               </View>
 
+              <View>
+                <Text style={styles.label}>Quantity</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Quantity"
+                  value={quantity}
+                  onChangeText={setQuantity}
+                  keyboardType="numeric"
+                />
+              </View>
+
               {/* Displaying fetched recipes based on the selected item */}
               {recipes.length > 0 && (
                 <View style={styles.recipeCard}>
                   <Text style={styles.label}>Recipe Includes:</Text>
                   {recipes.map((recipe) => (
                     <Text key={recipe.id} style={styles.recipeText}>
-                      {recipe.store.item_name} - (Usage Amount: {recipe.usage_amount} {recipe.uom})
+                      {recipe.store.item_name} - (Usage Amount:{" "}
+                      {recipe.usage_amount} {recipe.uom})
                     </Text>
                   ))}
                 </View>
@@ -262,7 +281,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   storeMOdalCloseButton: {
-    padding: 10
+    padding: 10,
   },
   formViewContainer: {
     paddingVertical: 5,
@@ -275,7 +294,7 @@ const styles = StyleSheet.create({
     color: "black",
     backgroundColor: "#eae9e8",
     marginBottom: 20,
-    height: 48
+    height: 48,
     // borderRadius: 5,
   },
   buttonContainer: {
@@ -305,7 +324,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#eae9e8",
     marginBottom: 10,
     borderRadius: 5,
-
   },
   recipeCard: {
     marginVertical: 10,
@@ -315,7 +333,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#e2c0f8",
     borderBottomColor: "#e2c0f8",
     // backgroundColor: "#e2c0f8"
-  }
+  },
 });
 
 export default StockOutModal;
